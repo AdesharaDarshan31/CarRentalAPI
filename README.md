@@ -5,9 +5,13 @@ A complete **Car Rental Management System** built using **ASP.NET Core (.NET 8)*
 
 ## 🛠️ Technologies Used
 | ASP.NET Core (.NET 8) | Backend API |
+
 | Swagger | API Testing |
+
 | HTML / CSS / JS | Frontend UI |
+
 | Entity Framework Core | Database ORM |
+
 | SQL Server | Database |
 
 This project is a complete Car Rental Management System developed using ASP.NET Core (.NET 8) 
