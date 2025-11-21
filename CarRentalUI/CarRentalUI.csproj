@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\style.css" />
+    <None Include="wwwroot\images\208.jpeg" />
+    <None Include="wwwroot\images\a1.jpeg" />
+    <None Include="wwwroot\images\bmw1.jpeg" />
+    <None Include="wwwroot\images\c3.jpeg" />
+    <None Include="wwwroot\images\clio.jpeg" />
+    <None Include="wwwroot\images\cooper.jpeg" />
+    <None Include="wwwroot\images\fabia.jpeg" />
+    <None Include="wwwroot\images\fiesta.jpeg" />
+    <None Include="wwwroot\images\i20.jpeg" />
+    <None Include="wwwroot\images\jazz.jpeg" />
+    <None Include="wwwroot\images\micra.jpeg" />
+    <None Include="wwwroot\images\polo.jpeg" />
+    <None Include="wwwroot\images\rio.jpeg" />
+    <None Include="wwwroot\images\shift.jpeg" />
+    <None Include="wwwroot\images\yaris.jpeg" />
+    <None Include="wwwroot\pages\all-bookings.html" />
+    <None Include="wwwroot\pages\bookings.html" />
+    <None Include="wwwroot\pages\cars.html" />
+    <None Include="wwwroot\pages\contact.html" />
+    <None Include="wwwroot\pages\index.html" />
+    <None Include="wwwroot\pages\users.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

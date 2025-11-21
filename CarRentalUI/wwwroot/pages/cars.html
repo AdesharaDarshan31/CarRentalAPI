@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Cars | D's Car Rental</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: #f6f9fc;
+            font-family: Arial, sans-serif;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .car-card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 330px;
+            transition: 0.2s;
+        }
+
+            .car-card img {
+                width: 100%;
+                height: 160px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .car-card:hover {
+                transform: scale(1.03);
+                box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header style="background:#005ce6;padding:15px 0;text-align:center;color:white;">
+        <h1>D's Car Rental</h1>
+        <nav>
+            <a href="/index.html" style="color:white;">Home</a>
+            <a href="/pages/cars.html" style="color:white; font-weight:bold;">Cars</a>
+            <a href="/pages/bookings.html" style="color:white;">Bookings</a>
+            <a href="/pages/users.html" style="color:white;">Users</a>
+            <a href="/pages/contact.html" style="color:white;">Contact</a>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div style="max-width:1100px;margin:auto;padding:25px;">
+        <h2 style="text-align:center;">Available Cars</h2>
+        <div id="carList" class="car-grid"></div>
+    </div>
+
+    <!-- FIXED PATH ✔ -->
+    <script src="/javascript/API_CONFIG.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadCars);
+
+        function loadCars() {
+            fetch(`${API_BASE_URL}/cars`)  // 👈 LOWERCASE FIXED!
+                .then(res => res.json())
+                .then(cars => {
+                    const container = document.getElementById("carList");
+                    container.innerHTML = "";
+
+                    cars.forEach(car => {
+                        let imgPath = car.imageUrl && car.imageUrl !== ""
+                            ? `${API_IMAGE_ROOT}/${car.imageUrl}`  // full path
+                            : "https://via.placeholder.com/260x160?text=No+Image"; // fallback image
+
+                        container.innerHTML += `
+                                <div class="car-card">
+                                    <img src="${imgPath}" alt="${car.make} ${car.model}">
+                                    <h3>${car.make} ${car.model}</h3>
+                                    <p>Transmission: ${car.transmission}</p>
+                                    <p><b>₹${car.pricePerDay} / day</b></p>
+                                </div>
+                            `;
+                    });
+                })
+                .catch(err => console.error("Error loading cars:", err));
+        }
+    </script>
+
+</body>
+</html>

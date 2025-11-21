@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookings | D's Car Rental</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- global css -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+            .form-section div {
+                display: flex;
+                flex-direction: column;
+            }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn-primary {
+            background: #005ce6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 200px;
+        }
+
+            .btn-primary:hover {
+                background: #003d99;
+            }
+
+        .total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 700px) {
+            .form-section {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header style="background:#005ce6; padding:15px 0; text-align:center;">
+        <h1 style="color:white;">D's Car Rental</h1>
+        <nav>
+            <a href="/index.html" style="color:white; margin:0 15px;">Home</a>
+            <a href="/pages/cars.html" style="color:white; margin:0 15px;">Cars</a>
+            <a href="/pages/bookings.html" style="color:white; margin:0 15px; font-weight:bold;">Bookings</a>
+            <a href="/pages/users.html" style="color:white; margin:0 15px;">Users</a>
+            <a href="/pages/contact.html" style="color:white; margin:0 15px;">Contact</a>
+        </nav>
+    </header>
+
+    <!-- MAIN CARD -->
+    <div class="container">
+        <h2>Make a Booking</h2>
+
+        <div class="form-section">
+            <div>
+                <label>User</label>
+                <select id="userSelect">
+                    <option value="">-- Select User --</option>
+                </select>
+                <small>If empty, add users first on <a href="/pages/users.html">Users</a>.</small>
+            </div>
+
+            <div>
+                <label>Car</label>
+                <select id="carSelect">
+                    <option value="">-- Select Car --</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+
+            <div>
+                <label>End Date</label>
+                <input type="date" id="endDate">
+            </div>
+        </div>
+
+        <p class="total" id="totalAmount">Total: ₹0</p>
+        <button class="btn-primary" onclick="bookNow()">Book Now</button>
+    </div>
+
+
+    <!-- FIXED PATH ✔ -->
+    <script src="/javascript/API_CONFIG.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadUsers();
+            loadCars();
+        });
+
+        function loadUsers() {
+            fetch(`${API_BASE_URL}/users`)   // 👈 FIXED small 'u'
+                .then(res => res.json())
+                .then(users => {
+                    const userSelect = document.getElementById("userSelect");
+                    users.forEach(user => {
+                        userSelect.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function loadCars() {
+            fetch(`${API_BASE_URL}/cars`)   // 👈 FIXED small 'c'
+                .then(res => res.json())
+                .then(cars => {
+                    const carSelect = document.getElementById("carSelect");
+                    cars.forEach(car => {
+                        carSelect.innerHTML += `<option value="${car.id}" data-price="${car.pricePerDay}">
+                                ${car.make} ${car.model} — ₹${car.pricePerDay}/day
+                            </option>`;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function calculateTotal() {
+            const car = document.getElementById("carSelect");
+            const pricePerDay = parseInt(car.selectedOptions[0]?.getAttribute("data-price")) || 0;
+            const start = new Date(document.getElementById("startDate").value);
+            const end = new Date(document.getElementById("endDate").value);
+
+            if (pricePerDay && start && end && end > start) {
+                const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                document.getElementById("totalAmount").innerText = `Total: ₹${pricePerDay * days}`;
+            } else {
+                document.getElementById("totalAmount").innerText = "Total: ₹0";
+            }
+        }
+
+        // LISTENERS
+        document.getElementById("startDate").addEventListener("change", calculateTotal);
+        document.getElementById("endDate").addEventListener("change", calculateTotal);
+        document.getElementById("carSelect").addEventListener("change", calculateTotal);
+
+        function bookNow() {
+            const userId = document.getElementById("userSelect").value;
+            const carId = document.getElementById("carSelect").value;
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (!userId || !carId || !startDate || !endDate) {
+                alert("Please fill all fields before booking!");
+                return;
+            }
+
+            fetch(`${API_BASE_URL}/bookings`, {  // 👈 bookings = small 'b'
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, carId, startDate, endDate })
+            }).then(res => {
+                if (res.ok) alert("Booking successful!");
+                else alert("Error: Could not create booking.");
+                location.reload();
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Bookings</title>
+</head>
+<body>
+
+    <h2>All Bookings</h2>
+    <div id="bookingsList"></div>
+
+    <script type="module">
+        import API_BASE_URL from "../javascript/api_CONFIG.js";
+
+        async function loadBookings() {
+            const res = await fetch(`${API_BASE_URL}/bookings`);
+            const data = await res.json();
+
+            const div = document.getElementById("bookingsList");
+            div.innerHTML = "";
+
+            data.forEach(b => {
+                div.innerHTML += `<p>Booking ID: ${b.id} | User: ${b.userId} | Car: ${b.carId} | Total ₹${b.totalPrice}</p>`;
+            });
+        }
+
+        loadBookings();
+    </script>
+</body>
+</html>

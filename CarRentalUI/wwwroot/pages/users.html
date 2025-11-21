@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users | D's Car Rental</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        /* ------- PAGE & CONTAINER ------- */
+        body {
+            background: #f4f6fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #0056d2;
+        }
+
+        /* -------- FORM ALIGN ------- */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+            .form-row input,
+            .form-row select {
+                padding: 10px;
+                width: 180px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+            }
+
+            .form-row button {
+                padding: 10px 18px;
+                background: #0056d2;
+                border: none;
+                color: white;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+                .form-row button:hover {
+                    background: #003d99;
+                }
+
+        /* ------- TABLE STYLING ------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #0056d2;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f5fa;
+        }
+
+        td button {
+            padding: 6px 12px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            td button:hover {
+                background: #b30000;
+            }
+
+        /* ------- RESPONSIVE ------- */
+        @media (max-width: 650px) {
+            .form-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+                .form-row input,
+                .form-row select,
+                .form-row button {
+                    width: 100%;
+                }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR  -->
+    <header class="nav-header">
+        <h1>D's Car Rental</h1>
+        <nav class="nav-links">
+            <a href="/pages/all-bookings.html">All Bookings</a>
+            <a href="/index.html">Home</a>
+            <a href="/pages/cars.html">Cars</a>
+            <a href="/pages/bookings.html">Bookings</a>
+            <a class="active" href="/pages/users.html">Users</a>
+            <a href="/pages/contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <h2 class="section-title">Add User</h2>
+        <div class="form-row">
+            <input id="name" type="text" placeholder="Full Name">
+            <input id="email" type="email" placeholder="Email">
+            <input id="password" type="password" placeholder="Password">
+            <select id="role">
+                <option>Customer</option>
+                <option>Admin</option>
+            </select>
+            <button onclick="addUser()">Save User</button>
+        </div>
+
+        <h2 class="section-title">All Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTable">
+                <!-- Data loaded using JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DO NOT TOUCH BACKEND -->
+    <script src="/javascript/API_CONFIG.js"></script>
+
+    <script>
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/users`);
+                const data = await res.json();
+
+                const table = document.getElementById('usersTable');
+                table.innerHTML = "";
+
+                data.forEach(u => {
+                    table.innerHTML += `
+                            <tr>
+                                <td>${u.id}</td>
+                                <td>${u.name}</td>
+                                <td>${u.email}</td>
+                                <td>${u.role}</td>
+                                <td><button onclick="deleteUser(${u.id})">Delete</button></td>
+                            </tr>`;
+                });
+            } catch (err) {
+                console.error(err);
+                alert("API not running!");
+            }
+        }
+
+        async function addUser() {
+            const newUser = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+
+            const res = await fetch(`${API_BASE_URL}/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newUser)
+            });
+
+            if (res.ok) {
+                alert("User saved!");
+                loadUsers();
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm("Are you sure?")) return;
+            await fetch(`${API_BASE_URL}/users/${id}`, { method: "DELETE" });
+            loadUsers();
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>
